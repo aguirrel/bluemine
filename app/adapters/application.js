@@ -1,8 +1,12 @@
 import DS from 'ember-data';
+import Ember from 'ember';
 
 export default DS.JSONAPIAdapter.extend({
-    host: 'http://redmine',
-    namespace: '',
+    host: '',
+    namespace: 'api',
+    headers: {
+        'Content-Type': 'application/json'
+    },
     buildURL: function(record, suffix) {
         return this._super(record, suffix) + '.json';
     },
@@ -11,25 +15,9 @@ export default DS.JSONAPIAdapter.extend({
       console.log(ptype);
       return Ember.String.underscore(ptype);
     },
-    ajaxOptions(url, type, options) {
-      var hash = options || {};
-      hash.url = url;
-      hash.type = type;
-      hash.dataType = 'jsonp';
-      hash.context = this;
-
-      if (hash.data && type !== 'GET') {
-        hash.contentType = 'application/javascript; charset=utf-8';
-        hash.data = JSON.stringify(hash.data);
-      }
-
-      var headers = Ember.get(this, 'headers');
-      if (headers !== undefined) {
-        hash.beforeSend = function (xhr) {
-          Object.keys(headers).forEach((key) =>  xhr.setRequestHeader(key, headers[key]));
-        };
-      }
-
+    ajaxOptions: function(url, type, options) {
+      var hash = this._super(...arguments);
+      //hash.dataType = "jsonp";
       return hash;
     }
 });

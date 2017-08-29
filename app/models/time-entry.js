@@ -4,8 +4,8 @@ export default DS.Model.extend({
   projectId: DS.attr(),
   issueId: DS.attr(),
   userId: DS.attr(),
-  activitId: DS.attr(),
+  activityId: DS.attr(),
   hours: DS.attr(),
   comments: DS.attr(),
-  spent_on: DS.attr()
+  spentOn: DS.attr()
 });
