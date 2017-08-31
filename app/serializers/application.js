@@ -27,5 +27,17 @@ export default DS.RESTSerializer.extend({
             }
         });
         return this._super(...arguments);
+    },
+    keyForRelationship(key, typeClass, method)
+    {
+        if(method == 'serialize')
+        {
+            if(typeClass == 'belongsTo')
+            {
+                key = key + '_id';
+            }
+        }
+        return key;
+
     }
 });
