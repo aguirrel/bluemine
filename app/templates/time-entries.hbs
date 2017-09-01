@@ -1,1 +1,48 @@
-{{outlet}}
+<table style='width: 100%'>
+  <thead>
+    <tr>
+      <th>
+        <h3>Nro</h3>
+      </th>
+      <th>
+        <h3>Titulo</h3>
+      </th>
+      <th>
+        <h3>Lunes</h3>
+      </th>
+      <th>
+        <h3>Martes</h3>
+      </th>
+      <th>
+        <h3>Miércoles</h3>
+      </th>
+      <th>
+        <h3>Jueves</h3>
+      </th>
+      <th>
+        <h3>Viernes</h3>
+      </th>
+      <th>
+        <h3>Sábado</h3>
+      </th>
+      <th>
+        <h3>Domingo</h3>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each timesByIssue as |group|}}
+      <tr>
+        <td>{{group.value}}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
