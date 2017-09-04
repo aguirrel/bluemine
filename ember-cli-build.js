@@ -6,6 +6,14 @@ const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 module.exports = function(defaults) {
   let app = new EmberApp(defaults, {
     // Add options here
+    'ember-date-fns': {
+      includedDateFns: [
+        'end_of_day',
+        'start_of_week',
+        'last_day_of_week',
+        'format'
+      ],
+    }
   });
 
   // Use `app.import` to add additional libraries to the generated

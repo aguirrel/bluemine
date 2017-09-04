@@ -1,3 +1,17 @@
+{{#paper-autocomplete
+placeholder="Buscar ticket..."
+  options=arrayOfItems
+  selected=selectedItem
+  searchField= "subject"
+  labelPath="subject"
+  onSearchTextChange=(action "issueSearchTextAction")
+  onSelectionChange=(action (mut selectedItem)) as |issue autocomplete|}}
+  {{paper-autocomplete-highlight
+    label=issue.subject
+    searchText=autocomplete.searchText
+    flags="i"}}
+{{/paper-autocomplete}}
+
 <table style='width: 100%'>
   <thead>
     <tr>
