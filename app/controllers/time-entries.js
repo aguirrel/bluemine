@@ -4,6 +4,7 @@ import groupBy from 'ember-group-by';
 export default Ember.Controller.extend({
   application: Ember.inject.controller(),
   timesByIssue: groupBy('model', 'issue.id'),
+  showIssueSearch: false,
   selectedItem: null,
   searchIssue(text) {
     this.store.query('issue', {
@@ -17,6 +18,12 @@ export default Ember.Controller.extend({
   actions: {
     issueSearchTextAction(text) {
       Ember.run.debounce(this, this.searchIssue(text), 2000);
+    },
+    closeIssueSearch(issues) {
+      console.log(issues);
+    },
+    openIssueSearch() {
+      this.set('showIssueSearch', true);
     }
   }
 });

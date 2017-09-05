@@ -60,3 +60,5 @@ placeholder="Buscar ticket..."
     {{/each}}
   </tbody>
 </table>
+{{#paper-button onClick=(action "openIssueSearch") classNames="bm-fab" iconButton=true raised=true fab=true primary=true}}{{paper-icon "add"}}{{/paper-button}}
+{{issue-search showDialog=showIssueSearch closePromptDialog=(action "closeIssueSearch")}}
