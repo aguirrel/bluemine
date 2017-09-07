@@ -1,64 +1,71 @@
-{{#paper-autocomplete
-placeholder="Buscar ticket..."
-  options=arrayOfItems
-  selected=selectedItem
-  searchField= "subject"
-  labelPath="subject"
-  onSearchTextChange=(action "issueSearchTextAction")
-  onSelectionChange=(action (mut selectedItem)) as |issue autocomplete|}}
-  {{paper-autocomplete-highlight
-    label=issue.subject
-    searchText=autocomplete.searchText
-    flags="i"}}
-{{/paper-autocomplete}}
-
-<table style='width: 100%'>
-  <thead>
-    <tr>
-      <th>
-        <h3>Nro</h3>
-      </th>
-      <th>
-        <h3>Titulo</h3>
-      </th>
-      <th>
-        <h3>Lunes</h3>
-      </th>
-      <th>
-        <h3>Martes</h3>
-      </th>
-      <th>
-        <h3>Miércoles</h3>
-      </th>
-      <th>
-        <h3>Jueves</h3>
-      </th>
-      <th>
-        <h3>Viernes</h3>
-      </th>
-      <th>
-        <h3>Sábado</h3>
-      </th>
-      <th>
-        <h3>Domingo</h3>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    {{#each timesByIssue as |group|}}
+{{#paper-toolbar}}
+  {{#paper-toolbar-tools}}
+    {{#paper-button iconButton=true}}
+      {{paper-icon "menu"}}
+    {{/paper-button}}
+    <h2>
+      Toolbar with Icon Buttons
+    </h2>
+    <span class="flex"></span>
+    {{#paper-button iconButton=true}}
+      {{paper-icon "favorite"}}
+    {{/paper-button}}
+    {{#paper-button iconButton=true}}
+      {{paper-icon "more_vert"}}
+    {{/paper-button}}
+  {{/paper-toolbar-tools}}
+{{/paper-toolbar}}
+{{#paper-content class="md-padding" }}
+  <table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp">
+    <thead>
       <tr>
-        <td>{{group.value}}</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <th> </th>
+        <th>Nro</th>
+        <th class="mdl-data-table__cell--non-numeric">Ticket</th>
+        {{#each fechas as |fecha|}}
+          <th class="mdl-data-table__cell--non-numeric">{{date-format fecha.dia "dd DD-MM-YY"}}</th>
+        {{/each}}
       </tr>
-    {{/each}}
-  </tbody>
-</table>
-{{#paper-button onClick=(action "openIssueSearch") classNames="bm-fab" iconButton=true raised=true fab=true primary=true}}{{paper-icon "add"}}{{/paper-button}}
-{{issue-search showDialog=showIssueSearch closePromptDialog=(action "closeIssueSearch")}}
+    </thead>
+    <tfoot>
+      <tr>
+        <td> </td>
+        <td> </td>
+        <td class="mdl-data-table__cell--non-numeric">TOTAL</td>
+        {{#each fechas as |fecha|}}
+          <td>{{fecha.total}}</td>
+        {{/each}}
+      </tr>
+    </tfoot>
+    <tbody>
+      {{#each application.model.options.timeIssuesList as |issue|}}
+        <tr>
+          <td>
+            {{#paper-button iconButton=true onClick=(action "deleteFromOptions" issue)}}{{paper-icon "delete"}}{{/paper-button}}
+          </td>
+          <td>{{issue.id}}</td>
+          <td class="mdl-data-table__cell--non-numeric">{{issue.subject}}</td>
+          {{#each issue.timeEntriesSorted as |te|}}
+            <td class="mdl-data-table__cell--non-numeric">
+              <div class="layout-column flex">
+                {{paper-input
+                type="number"
+                value=te.hours
+                onChange=(action (queue (action (mut te.hours)) (action "saveTimeEntry" te)))}}
+                {{#paper-select
+                label="Actividad"
+                options=actividades
+                selected=te.activity
+                onChange=(action (queue (action (mut te.activity)) (action "saveTimeEntry" te) )) as |actividad|}}
+                  {{actividad.name}}
+                {{/paper-select}}
+              </div>
+            </td>
+          {{/each}}
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+{{/paper-content}}
+{{#paper-button onClick=(action (toggle "showIssueSearch" this)) classNames="bm-fab" iconButton=true raised=true fab=true primary=true}}{{paper-icon "add"}}{{/paper-button}}
+{{issue-search showDialog=showIssueSearch closePromptDialog=(action "closeIssueSearch") selectedIssues=searchSelectedIssues}}

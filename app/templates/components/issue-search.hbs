@@ -1,18 +1,27 @@
 {{#if showDialog}}
-  {{#paper-dialog fullscreen=true onClose=(action "closePromptDialog" "cancel") origin=dialogOrigin}}
-
+  {{#paper-dialog class="flex-50" fullscreen=true onClose=(action "closePromptDialog" "cancel") origin=dialogOrigin}}
     {{#paper-dialog-content}}
       {{paper-input label="Número o texto del ticket" autofocus=true type="text" value=textoSearch onChange=(action (queue (action (mut textoSearch)) (action "searchText"))) iconRight="search"}}
-      <div>
-        {{#paper-checkbox value=fullscreen onChange=(action (mut fullscreen))}}Display fullscreen at small window size breakpoints{{/paper-checkbox}}
-      </div>
     {{/paper-dialog-content}}
-
-    {{#paper-dialog-actions class="layout-row"}}
+    {{#paper-dialog-content}}
+      {{#if isIssuesLoading}}
+        <p>Cargando...</p>
+      {{/if}}
+      {{#each issues as |issue|}}
+        {{#paper-item as |controls|}}
+          {{controls.checkbox value=issue.checked onChange=(action (queue (action (mut issue.checked)) (action "updateSelected" issue)))}}
+          <p>{{issue.id}} - {{issue.subject}}</p>
+        {{/paper-item}}
+      {{else}}
+        {{#paper-item}}
+          <p>No se encontraron tickets</p>
+        {{/paper-item}}
+      {{/each}}
+    {{/paper-dialog-content}}
+    {{#paper-dialog-actions class="layout-row" }}
       <span class="flex"></span>
       {{#paper-button primary=true onClick=(action "closePromptDialog" "cancel")}}Cancelar{{/paper-button}}
       {{#paper-button primary=true onClick=(action "closePromptDialog" "ok" dogName)}}OK{{/paper-button}}
     {{/paper-dialog-actions}}
-
   {{/paper-dialog}}
 {{/if}}

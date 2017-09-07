@@ -11,7 +11,13 @@ module.exports = function(defaults) {
         'end_of_day',
         'start_of_week',
         'last_day_of_week',
-        'format'
+        'format',
+        'parse',
+        'each_day',
+        'compare_asc',
+        'is_equal',
+        'get_day',
+        'locale/es',
       ],
     }
   });

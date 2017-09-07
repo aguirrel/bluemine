@@ -5,7 +5,7 @@ export default DS.Model.extend({
   issue: DS.belongsTo('issue', { async: true }),
   user: DS.belongsTo('user', { async: true }),
   activity: DS.belongsTo('time-entry-activity', { async: true }),
-  hours: DS.attr(),
+  hours: DS.attr('number'),
   comments: DS.attr(),
-  spentOn: DS.attr()
+  spentOn: DS.attr('fecha')
 });
