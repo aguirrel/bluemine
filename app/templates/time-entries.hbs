@@ -1,21 +1,28 @@
-{{#paper-toolbar}}
-  {{#paper-toolbar-tools}}
-    {{#paper-button iconButton=true}}
-      {{paper-icon "menu"}}
-    {{/paper-button}}
-    <h2>
-      Toolbar with Icon Buttons
-    </h2>
-    <span class="flex"></span>
-    {{#paper-button iconButton=true}}
-      {{paper-icon "favorite"}}
-    {{/paper-button}}
-    {{#paper-button iconButton=true}}
-      {{paper-icon "more_vert"}}
-    {{/paper-button}}
-  {{/paper-toolbar-tools}}
-{{/paper-toolbar}}
-{{#paper-content class="md-padding" }}
+{{#paper-card as |card|}}
+  {{#card.title as |title|}}
+    {{#title.text as |text|}}
+      {{#text.headline}}Seleccione el rango de fechas{{/text.headline}}
+    {{/title.text}}
+  {{/card.title}}
+  {{#card.content}}
+    {{#power-calendar-range
+      center=foo
+      selected=range
+      onCenterChange=(action (mut foo) value="date")
+      onSelect=(action (mut range) value="moment") as |calendar|}}
+      {{calendar.nav}}
+      {{calendar.days}}
+    {{/power-calendar-range}}
+  {{/card.content}}
+{{/paper-card}}
+{{#paper-card as |card|}}
+  {{#card.title as |title|}}
+    {{#title.text as |text|}}
+      {{#text.headline}}Seleccione el rango de fechas{{/text.headline}}
+    {{/title.text}}
+  {{/card.title}}
+  {{#card.content}}
+<div class="table-scroll">
   <table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp">
     <thead>
       <tr>
@@ -33,7 +40,7 @@
         <td> </td>
         <td class="mdl-data-table__cell--non-numeric">TOTAL</td>
         {{#each fechas as |fecha|}}
-          <td>{{fecha.total}}</td>
+          <td class="mdl-data-table__cell--non-numeric">{{date-format fecha.dia "ddd DD-MM"}} Horas: {{fecha.total}}</td>
         {{/each}}
       </tr>
     </tfoot>
@@ -46,26 +53,21 @@
           <td>{{issue.id}}</td>
           <td class="mdl-data-table__cell--non-numeric">{{issue.subject}}</td>
           {{#each issue.timeEntriesSorted as |te|}}
-            <td class="mdl-data-table__cell--non-numeric">
-              <div class="layout-column flex">
-                {{paper-input
-                type="number"
-                value=te.hours
-                onChange=(action (queue (action (mut te.hours)) (action "saveTimeEntry" te)))}}
-                {{#paper-select
-                label="Actividad"
-                options=actividades
-                selected=te.activity
-                onChange=(action (queue (action (mut te.activity)) (action "saveTimeEntry" te) )) as |actividad|}}
-                  {{actividad.name}}
-                {{/paper-select}}
-              </div>
-            </td>
+            {{#if (and (lte inicioFecha te.spentOn) (lte te.spentOn finFecha))}}
+              <td class="mdl-data-table__cell--non-numeric">
+                {{time-entry-cell model=te actividades=actividades}}
+              </td>
+            {{/if}}
           {{/each}}
         </tr>
       {{/each}}
     </tbody>
   </table>
-{{/paper-content}}
-{{#paper-button onClick=(action (toggle "showIssueSearch" this)) classNames="bm-fab" iconButton=true raised=true fab=true primary=true}}{{paper-icon "add"}}{{/paper-button}}
+</div>
+{{/card.content}}
+{{#card.actions}}
+        {{#paper-button onClick=(action (toggle "showIssueSearch" this)) primary=true}}{{paper-icon "add"}} Agregar Ticket{{/paper-button}}
+      {{/card.actions}}
+{{/paper-card}}
+<!-- {{#paper-button onClick=(action (toggle "showIssueSearch" this)) classNames="bm-fab" iconButton=true raised=true fab=true primary=true}}{{paper-icon "add"}}{{/paper-button}} -->
 {{issue-search showDialog=showIssueSearch closePromptDialog=(action "closeIssueSearch") selectedIssues=searchSelectedIssues}}

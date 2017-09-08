@@ -23,6 +23,10 @@ export default DS.JSONAPIAdapter.extend({
   },
   ajaxOptions: function(url, type, options) {
     var hash = this._super(...arguments);
+
+    if(hash.type === 'PATCH') {
+      hash.type = 'PUT';
+    }
     //hash.dataType = "jsonp";
     return hash;
   }

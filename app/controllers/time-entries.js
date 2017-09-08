@@ -1,16 +1,25 @@
 import Ember from 'ember';
+import format from 'date-fns/format';
 
 export default Ember.Controller.extend({
   application: Ember.inject.controller(),
   searchSelectedIssues: Ember.makeArray(),
   showIssueSearch: false,
   selectedItem: null,
-  totalHoras: Ember.observer('timeEntries.@each.hours', () => {
-    console.log("D");
-    Ember.run.schedule("afterRender", this, function() {
-      console.log(this);
-      //this.send("calcularTotales");
-    });
+  totalHoras: Ember.observer('timeEntries.@each.hours', function() {
+      this.send("calcularTotales");
+  }),
+  rangeObserver: Ember.observer('range', function() {
+    let range = this.get('range');
+
+    if (range.start && range.end) {
+      this.transitionToRoute({
+        queryParams: {
+          start: format(range.start, 'YYYY-MM-DD'),
+          end: format(range.end, 'YYYY-MM-DD')
+        }
+      });
+    }
   }),
   actions: {
     closeIssueSearch(text) {
@@ -30,10 +39,12 @@ export default Ember.Controller.extend({
     calcularTotales() {
       this.get('fechas').forEach(f => f.set('total', 0));
       this.get('application.model.options.timeIssuesList').forEach(issue => {
-        issue.get('timeEntriesSorted').forEach((te, idx) => {
+        issue.get('timeEntriesSorted').filter((item) => {
+          return this.get('inicioFecha') <= item.get('spentOn') && item.get('spentOn') <= this.get('finFecha');
+        }).forEach((te, idx) => {
           this.get('fechas').objectAt(idx).incrementProperty('total', Number(te.get('hours')))
-        })
-      })
+        });
+      });
     },
     deleteFromOptions(issue) {
       this.get('application.model.options').then(options => {
@@ -42,9 +53,6 @@ export default Ember.Controller.extend({
           options.save();
         }
       });
-    },
-    saveTimeEntry(te) {
-
     }
   }
 });
