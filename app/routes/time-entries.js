@@ -24,13 +24,14 @@ export default Ember.Route.extend({
     }
 
     return this.get('store').query('time_entry', {
+      limit: 100,
       user_id: this.modelFor("application").get('id'),
       spent_on: '><' + this.get('inicioFecha') + '|' + this.get('finFecha')
     });
   },
   setupController(controller, model) {
-    console.log("AA");
     this._super(controller, model);
+
     controller.set('inicioFecha', parse(this.get('inicioFecha')));
     controller.set('finFecha', parse(this.get('finFecha')));
     controller.set('range', {
@@ -44,9 +45,13 @@ export default Ember.Route.extend({
       })
     ));
     controller.set('timeEntries', this.get('store').peekAll('time-entry'));
+
+    let promises = [];
+
     let tea = this.get('store').findAll('time-entry-activity').then(actividades => {
       controller.set('actividades', actividades);
     });
+    promises.push(tea);
 
     let til = this.modelFor('application')
       .get('options')
@@ -55,6 +60,23 @@ export default Ember.Route.extend({
           issue.timeEntriesFull(this.get('inicioFecha'), this.get('finFecha'))
         });
       });
-    return Ember.RSVP.Promise.all([tea, til]).then(() => controller.send('calcularTotales'));
+    promises.push(til);
+
+    controller.get('timeEntries').forEach(te => {
+      let p = te.get('issue');
+      promises.push(p);
+    });
+
+    return Ember.RSVP.Promise.all(promises).then(() => {
+      controller.set('mentionedIssues', this.get('store').peekAll('issue'));
+      controller.get('mentionedIssues').forEach(issue => {
+        issue.timeEntriesFull(this.get('inicioFecha'), this.get('finFecha'));
+      });
+      let allIssues = Ember.makeArray();
+      allIssues.addObjects(controller.get('mentionedIssues'));
+      allIssues.addObjects(this.modelFor('application').get('options').get('timeIssuesList'));
+      controller.set('allIssues', allIssues);
+      controller.send('calcularTotales');
+  });
   }
 });

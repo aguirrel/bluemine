@@ -42,3 +42,20 @@ tfoot {
 .table-scroll {
   overflow:auto;
 }
+
+tfoot .weekend-hours {
+  color: darkgoldenrod;
+}
+
+tfoot .ok-hours {
+  color: green;
+}
+
+tfoot .less-hours {
+  color: red;
+}
+
+tfoot .more-hours {
+  color: orangered;
+}
+

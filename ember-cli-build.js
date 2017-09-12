@@ -18,6 +18,7 @@ module.exports = function(defaults) {
         'is_equal',
         'get_day',
         'locale/es',
+        'is_weekend'
       ],
     }
   });

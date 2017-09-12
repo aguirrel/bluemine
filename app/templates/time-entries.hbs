@@ -6,6 +6,7 @@
   {{/card.title}}
   {{#card.content}}
     {{#power-calendar-range
+      className="flex-30"
       center=foo
       selected=range
       onCenterChange=(action (mut foo) value="date")
@@ -18,8 +19,14 @@
 {{#paper-card as |card|}}
   {{#card.title as |title|}}
     {{#title.text as |text|}}
-      {{#text.headline}}Seleccione el rango de fechas{{/text.headline}}
+      {{#text.headline}}Horas cargadas{{/text.headline}}
     {{/title.text}}
+    <span class="flex"></span>
+    {{paper-input
+      type="number"
+      label= "Horas por dia"
+      value=application.model.options.hoursPerDay
+      onChange=(action (mut application.model.options.hoursPerDay))}}
   {{/card.title}}
   {{#card.content}}
 <div class="table-scroll">
@@ -27,7 +34,6 @@
     <thead>
       <tr>
         <th> </th>
-        <th>Nro</th>
         <th class="mdl-data-table__cell--non-numeric">Ticket</th>
         {{#each fechas as |fecha|}}
           <th class="mdl-data-table__cell--non-numeric">{{date-format fecha.dia "dd DD-MM-YY"}}</th>
@@ -37,21 +43,19 @@
     <tfoot>
       <tr>
         <td> </td>
-        <td> </td>
         <td class="mdl-data-table__cell--non-numeric">TOTAL</td>
         {{#each fechas as |fecha|}}
-          <td class="mdl-data-table__cell--non-numeric">{{date-format fecha.dia "ddd DD-MM"}} Horas: {{fecha.total}}</td>
+          <td class="mdl-data-table__cell--non-numeric {{fecha.status}}">{{date-format fecha.dia "ddd DD-MM"}} Horas: {{fecha.total}}</td>
         {{/each}}
       </tr>
     </tfoot>
     <tbody>
-      {{#each application.model.options.timeIssuesList as |issue|}}
+      {{#each allIssues as |issue|}}
         <tr>
           <td>
-            {{#paper-button iconButton=true onClick=(action "deleteFromOptions" issue)}}{{paper-icon "delete"}}{{/paper-button}}
+            {{#paper-button iconButton=true onClick=(action "deleteFromOptions" issue)}}{{paper-icon "delete" disabled=(contains mentionedIssues issue)}}{{/paper-button}}
           </td>
-          <td>{{issue.id}}</td>
-          <td class="mdl-data-table__cell--non-numeric">{{issue.subject}}</td>
+          <td class="mdl-data-table__cell--non-numeric">{{issue.id}}<br>{{issue.subject}}</td>
           {{#each issue.timeEntriesSorted as |te|}}
             {{#if (and (lte inicioFecha te.spentOn) (lte te.spentOn finFecha))}}
               <td class="mdl-data-table__cell--non-numeric">

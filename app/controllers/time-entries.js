@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import format from 'date-fns/format';
+import isWeekend from 'date-fns/is_weekend';
 
 export default Ember.Controller.extend({
   application: Ember.inject.controller(),
@@ -7,7 +8,10 @@ export default Ember.Controller.extend({
   showIssueSearch: false,
   selectedItem: null,
   totalHoras: Ember.observer('timeEntries.@each.hours', function() {
-      this.send("calcularTotales");
+    this.send("calcularTotales");
+  }),
+  hoursPerDayObserver: Ember.observer('application.model.options.hoursPerDay', function() {
+    this.get('application.model.options').then(o => o.save());
   }),
   rangeObserver: Ember.observer('range', function() {
     let range = this.get('range');
@@ -38,11 +42,29 @@ export default Ember.Controller.extend({
     },
     calcularTotales() {
       this.get('fechas').forEach(f => f.set('total', 0));
-      this.get('application.model.options.timeIssuesList').forEach(issue => {
+      if(!this.get('allIssues')) return;
+      this.get('allIssues').forEach(issue => {
         issue.get('timeEntriesSorted').filter((item) => {
           return this.get('inicioFecha') <= item.get('spentOn') && item.get('spentOn') <= this.get('finFecha');
         }).forEach((te, idx) => {
-          this.get('fechas').objectAt(idx).incrementProperty('total', Number(te.get('hours')))
+          let f=this.get('fechas').objectAt(idx);
+
+          f.incrementProperty('total', Number(te.get('hours')));
+          if(isWeekend(f.get('dia')))
+          {
+            if(f.get('total'))
+              f.set('status', 'weekend-hours');
+            else
+              f.set('status', 'ok-hours');
+          }
+          else {
+            if(f.get('total') < this.get('application.model.options.hoursPerDay'))
+              f.set('status', 'less-hours');
+            else if(f.get('total') > this.get('application.model.options.hoursPerDay'))
+              f.set('status', 'more-hours');
+            else
+              f.set('status', 'ok-hours');
+          }
         });
       });
     },
